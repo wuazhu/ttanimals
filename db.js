@@ -24,18 +24,18 @@ const Counter = sequelize.define("Counter", {
 const Users = sequelize.define("Users", {
   username: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     defaultValue: '',
   },
   avatarUrl: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     defaultValue: '',
   },
   token: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: '',
+    allowNull: true,
+    defaultValue: null,
   }
 });
 
