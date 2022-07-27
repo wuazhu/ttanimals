@@ -2,9 +2,14 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const axios = require('axios')
 const { init: initDB, Counter } = require("./db");
 
 const logger = morgan("tiny");
+
+const TT_APPID = 'tt4082363fdfbc782a01'
+const TT_SECRET = '5e84800243a43c4b64a750d163b74d1060d25e53'
+
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -32,6 +37,55 @@ app.post("/api/count", async (req, res) => {
     data: await Counter.count(),
   });
 });
+
+// 获取头条openId
+app.post('/getOpenId', async (req, res) => {
+  console.log(req.body);
+  try {
+      const {code, anonymousCode} = req.body
+      console.log('传过来的用户信息',req.body);
+      if (!code || !anonymousCode) {
+          return {
+              code: -1,
+              message: '请输入code和anonymousCode'
+          }
+      }
+      const data = await code2Session(req.body)
+      console.log('登录',data);
+      if (data.err_no == 0) {
+          return {
+              ...data.data,
+              code: 0
+          }
+      } else {
+          return {
+              ...data,
+              code: data.err_no
+          }
+      }
+  } catch (error) {
+      return {
+          ...error,
+          code: -1
+      }
+  }
+})
+const code2Session = async ({code, anonymousCode}) => {
+  const {data} = await axios({
+      url: 'https://developer.toutiao.com/api/apps/v2/jscode2session',
+      method: 'post',
+      data: {
+          appid: TT_APPID,
+          secret: TT_SECRET,
+          code,
+          anonymous_code: anonymousCode
+      },
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  })
+  return data
+}
 
 // 获取计数
 app.get("/api/count", async (req, res) => {

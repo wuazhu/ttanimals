@@ -20,9 +20,29 @@ const Counter = sequelize.define("Counter", {
   },
 });
 
+// 定义数据模型
+const Users = sequelize.define("Users", {
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: '',
+  },
+  avatarUrl: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: '',
+  },
+  token: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: '',
+  }
+});
+
 // 数据库初始化方法
 async function init() {
   await Counter.sync({ alter: true });
+  await Users.sync({ alter: true });
 }
 
 // 导出初始化方法和模型
