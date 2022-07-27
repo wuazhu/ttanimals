@@ -53,20 +53,20 @@ app.post('/getOpenId', async (req, res) => {
       const data = await code2Session(req.body)
       console.log('登录',data);
       if (data.err_no == 0) {
-          return {
-              ...data.data,
-              code: 0
+          req.body = {
+            ...data.data,
+            code: 0
           }
       } else {
-          return {
-              ...data,
-              code: data.err_no
+          req.body = {
+            ...data,
+            code: data.err_no
           }
       }
   } catch (error) {
-      return {
-          ...error,
-          code: -1
+      req.body = {
+        ...error,
+        code: -1
       }
   }
 })
