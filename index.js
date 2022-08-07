@@ -38,30 +38,57 @@ app.post("/api/count", async (req, res) => {
   });
 });
 
-// 获取头条openId
+/**
+ * platform 1：抖音、2快手
+ */
 app.post('/getOpenId', async (req, res) => {
   console.log(req.body);
   try {
-      const {code, anonymousCode} = req.body
-      console.log('传过来的用户信息',req.body);
-      if (!code || !anonymousCode) {
-          return {
-              code: -1,
-              message: '请输入code和anonymousCode'
-          }
+      const {code, anonymousCode, platform} = req.body
+      if (platform == 1 || !platform) {
+        if (!code || !anonymousCode) {
+            res.send({
+                code: -1,
+                message: '缺少code和anonymousCode'
+            })
+        }
+      } else if (platform == 2) {
+        if (!code) {
+          res.send({
+            code: -1,
+            message: '缺少code'
+          })
+        }
       }
+      
+      console.log('传过来的用户信息',req.body);
       const data = await code2Session(req.body)
       console.log('登录',data);
-      if (data.err_no == 0) {
-          res.send({
-            ...data.data,
-            code: 0
-          }) 
-      } else {
-          res.send({
-            ...data,
-            code: data.err_no
-          }) 
+      if (platform == 1) {
+          if (data.err_no == 0) {
+              res.send({
+                ...data.data,
+                code: 0
+              }) 
+          } else {
+              res.send({
+                ...data,
+                code: data.err_no
+              })
+          }
+      } else if(platform == 2) {
+          if (data.result == 1) {
+              res.send({
+                  code: 0,
+                  openid: data.open_id,
+                  ...data
+              })
+          } else {
+              res.send({
+                  code: data.result,
+                  ...data
+              })
+          }
       }
   } catch (error) {
       res.send({
@@ -70,22 +97,45 @@ app.post('/getOpenId', async (req, res) => {
       }) 
   }
 })
-const code2Session = async ({code, anonymousCode}) => {
+
+const code2Session = async ({code, anonymousCode, platform}) => {
+  let url = ''
+  let reqdata = {}
+  let reqHeader = {
+      'Content-Type': 'application/json'
+  }
+  switch (platform) {
+      case 1:
+          url = 'https://developer.toutiao.com/api/apps/v2/jscode2session'
+          reqdata = {
+            appid: TT_APPID,
+            secret: TT_SECRET,
+            code, anonymousCode
+          }
+          break;
+      case 2:
+          url = `https://open.kuaishou.com/oauth2/mp/code2session?app_id=${KS_APPID}&app_secret=${KS_SECRET}&js_code=${code}`
+          reqHeader['Content-Type'] = 'x-www-form-urlencoded'
+          break;
+      default:
+          url = 'https://developer.toutiao.com/api/apps/v2/jscode2session'
+          reqdata = {
+            appid: TT_APPID,
+            secret: TT_SECRET,
+            code, anonymousCode
+          }
+          break;
+  }
   const {data} = await axios({
-      url: 'https://developer.toutiao.com/api/apps/v2/jscode2session',
+      url,
       method: 'post',
-      data: {
-          appid: TT_APPID,
-          secret: TT_SECRET,
-          code,
-          anonymous_code: anonymousCode
-      },
-      headers: {
-          'Content-Type': 'application/json'
-      }
+      data: reqdata,
+      headers: reqHeader
   })
+  console.log('请求的接口', url);
   return data
 }
+
 
 // 获取计数
 app.get("/api/count", async (req, res) => {
