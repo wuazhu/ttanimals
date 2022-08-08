@@ -45,7 +45,7 @@ app.post('/getOpenId', async (req, res) => {
   console.log(req.body);
   try {
       const {code, anonymousCode, platform} = req.body
-      if (platform == 1 || !platform) {
+      if (platform == 1) {
         if (!code || !anonymousCode) {
             res.send({
                 code: -1,
@@ -57,6 +57,13 @@ app.post('/getOpenId', async (req, res) => {
           res.send({
             code: -1,
             message: '缺少code'
+          })
+        }
+      } else {
+        if (!code || !anonymousCode) {
+          res.send({
+              code: -1,
+              message: '缺少code和anonymousCode'
           })
         }
       }
@@ -98,7 +105,7 @@ app.post('/getOpenId', async (req, res) => {
   }
 })
 
-const code2Session = async ({code, anonymousCode, platform}) => {
+const code2Session = async ({code, anonymousCode, platform=1}) => {
   let url = ''
   let reqdata = {}
   let reqHeader = {
