@@ -22,6 +22,17 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+
+
+// 首页
+app.get("/showInput", async (req, res) => {
+  console.log(req.headers)
+  res.send({
+    code: 0,
+    data: false,
+  });
+});
+
 // 更新计数
 app.post("/api/count", async (req, res) => {
   const { action } = req.body;
