@@ -56,7 +56,7 @@ app.post("/api/count", async (req, res) => {
 app.post('/getOpenId', async (req, res) => {
   console.log(req.body);
   try {
-      const {code, anonymousCode, platform=1} = req.body
+      const {code, anonymousCode, platform} = req.body
       if (platform == 1) {
         if (!code || !anonymousCode) {
             res.send({
