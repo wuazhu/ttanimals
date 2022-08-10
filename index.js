@@ -52,6 +52,7 @@ app.post("/api/count", async (req, res) => {
 /**
  * platform 1：抖音、2快手
  */
+
 app.post('/getOpenId', async (req, res) => {
   console.log(req.body);
   try {
@@ -95,6 +96,7 @@ app.post('/getOpenId', async (req, res) => {
               })
           }
       } else if(platform == 2) {
+          console.log('platformplatform进来了', data.result == 1);
           if (data.result == 1) {
               res.send({
                   code: 0,
@@ -122,13 +124,14 @@ const code2Session = async ({code, anonymousCode, platform=1}) => {
   let reqHeader = {
       'Content-Type': 'application/json'
   }
+  console.log('code2Session platform',platform, typeof platform);
   switch (platform) {
       case 1:
           url = 'https://developer.toutiao.com/api/apps/v2/jscode2session'
           reqdata = {
-            appid: TT_APPID,
-            secret: TT_SECRET,
-            code, anonymousCode
+              appid: TT_APPID,
+              secret: TT_SECRET,
+              code, anonymousCode
           }
           break;
       case 2:
@@ -138,9 +141,9 @@ const code2Session = async ({code, anonymousCode, platform=1}) => {
       default:
           url = 'https://developer.toutiao.com/api/apps/v2/jscode2session'
           reqdata = {
-            appid: TT_APPID,
-            secret: TT_SECRET,
-            code, anonymousCode
+              appid: TT_APPID,
+              secret: TT_SECRET,
+              code, anonymousCode
           }
           break;
   }
@@ -150,7 +153,7 @@ const code2Session = async ({code, anonymousCode, platform=1}) => {
       data: reqdata,
       headers: reqHeader
   })
-  console.log('请求的接口', url);
+  console.log('code2Session 请求的接口', url, data);
   return data
 }
 
