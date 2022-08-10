@@ -29,7 +29,7 @@ app.get("/showInput", async (req, res) => {
   console.log(req.headers)
   res.send({
     code: 0,
-    data: true,
+    data: false,
   });
 });
 
