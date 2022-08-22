@@ -1,20 +1,22 @@
 {
   "name": "wxcloudrun-express",
   "version": "1.0.0",
-  "description": "微信云托管 express 框架模版",
+  "description": "小程序平台服务端",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "PORT=3000 DATABASE_NAME=localDemo MYSQL_ADDRESS=localhost:3306 MYSQL_USERNAME=local MYSQL_PASSWORD=12345 nodemon index.js"
   },
-  "author": "",
+  "author": "wuazhu",
   "license": "Apache-2.0",
   "dependencies": {
+    "nodemon": "^2.0.19",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.2",
     "axios": "^0.27.2",
-    "sequelize": "^6.8.0"
+    "sequelize": "^6.21.3"
   },
   "engines": {
     "node": ">=12.0.0"
