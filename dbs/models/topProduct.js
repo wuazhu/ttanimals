@@ -16,17 +16,11 @@ const TopProduct = sequelize.define('TopProduct', {
   },
   // 下载的url
   configUrl: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING,
   },
   // 主图
   mainPicture: {
-    type: DataTypes.STRING,
-    get() {
-      return this.getDataValue('mainPicture').split(',')
-    },
-    set(value) {
-      return this.setDataValue('mainPicture', value.join(','))
-    },
+    type: DataTypes.STRING(10000),
   },
   isShow: {
     type: DataTypes.BOOLEAN,

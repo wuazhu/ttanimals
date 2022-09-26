@@ -3,16 +3,9 @@ const router = express.Router()
 const Product = require('../dbs/models/product')
 const TopProduct = require('../dbs/models/topProduct')
 
-
-router.get('/test', (req, res) => {
-    console.log('收到product test请求', req.body);
-    res.send({
-        message: 'product test',
-        code: 0
-    })
-})
-
+// 根据用户id查询产品  C端
 router.get('/user/:id', async (req, res) => {
+    console.log('请求参数',req.body, req.params);
     if (!req.params.id) {
         res.send({
             message: `参数错误`,
@@ -22,10 +15,10 @@ router.get('/user/:id', async (req, res) => {
     }
     const _products = await Product.findAll({
         where: {
-            userId: req.params.id
+            UserId: req.params.id
         }
     })
-    if (_products) {
+    if (_products.length > 0) {
         res.send({
             list: _products,
             message: `查询成功`,
@@ -42,6 +35,7 @@ router.get('/user/:id', async (req, res) => {
     
 })
 
+// 获取置顶产品  C端
 router.get('/top', async (req, res) => {
     const _tops = await TopProduct.findAll({
         limit: 3,
@@ -58,6 +52,7 @@ router.get('/top', async (req, res) => {
     })
 })
 
+// 查询产品详情 C端
 router.get('/detail/:id', async (req, res) => {
     if (!req.params.id) {
         res.send({
@@ -81,6 +76,52 @@ router.get('/detail/:id', async (req, res) => {
         })
     }
 })
+
+// 创建产品 C端
+router.post('/create', async (req, res) => {
+    console.log('create', req.body);
+    if (
+        !req.body.userId || 
+        !req.body.mainPicture || 
+        !req.body.name ||
+        !req.body.configUrl
+    ) {
+        res.send({
+            code: -1,
+            message: '参数错误'
+        })
+        return
+    } else {
+        const reqObj = {
+            UserId: req.body.userId,
+            name: req.body.name,
+            desc: req.body.desc,
+            mainPicture: req.body.mainPicture,
+            configUrl: req.body.configUrl,
+        }
+        const prd = await Product.create(reqObj)
+        // console.log('创建成功',reqObj, prd)
+        res.send({
+            code: 0,
+            message: 'ok'
+        })
+    }
+    // const dtl = await Product.findByPk(req.params.id)
+    // console.log('详情',dtl);
+    // if (dtl) {
+    //     res.send({
+    //         ...dtl.toJSON(),
+    //         code: 0,
+    //         message: 'ok'
+    //     })    
+    // } else {
+    //     res.send({
+    //         code: -1,
+    //         message: '未查询到该产品'
+    //     })
+    // }
+})
+
 
 
 module.exports = router

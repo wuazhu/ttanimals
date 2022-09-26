@@ -10,12 +10,17 @@
   "author": "wuazhu",
   "license": "Apache-2.0",
   "dependencies": {
-    "nodemon": "^2.0.19",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
+    "cos-nodejs-sdk-v5": "^2.11.12",
+    "dayjs": "^1.11.5",
     "express": "^4.16.4",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.2",
-    "axios": "^0.27.2",
+    "nanoid": "^4.0.0",
+    "node-schedule": "^2.1.0",
+    "nodemon": "^2.0.19",
     "sequelize": "^6.21.3"
   },
   "engines": {

@@ -3,6 +3,9 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const sequelize = require('./dbs/index')
+const schedule = require('node-schedule')
+
+
 const {
   TT_ANIMAL_APPID,TT_ANIMAL_SECRET,KS_ANIMAL_APPID,KS_ANIMAL_SECRET,
   TT_THEME_APPID, TT_THEME_SECRET, KS_THEME_APPID, KS_THEME_SECRET
@@ -12,12 +15,15 @@ const app = express()
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+
 // 环境信息
 const port = process.env.PORT || 80;
 
 const User = require('./dbs/models/user')
 const Product = require('./dbs/models/product')
 const TopProduct = require('./dbs/models/topProduct')
+const Play = require('./dbs/models/play')
+const Analysis = require('./dbs/models/analysis')
 
 
 User.hasMany(Product)
@@ -25,6 +31,13 @@ Product.belongsTo(User)
 
 Product.hasOne(TopProduct)
 TopProduct.belongsTo(Product)
+
+User.hasMany(Play)
+Play.belongsTo(User)
+
+User.hasMany(Analysis)
+Analysis.belongsTo(User)
+
 
 // 数据库同步
 sequelize.sync({
@@ -62,14 +75,16 @@ app.use('/', (req, res, next) => {
   }
 })
 
-app.use('/user', require('./routes/user'))
-app.use('/product', require('./routes/product'))
+app.use('/api/user', require('./routes/user'))
+app.use('/api/product', require('./routes/product'))
+app.use('/api/file', require('./routes/file'))
+app.use('/api/play', require('./routes/play'))
 
 app.get("/showInput", async (req, res) => {
     console.log(req.headers)
     res.send({
       code: 0,
-      data: false,
+      data: true,
     });
 });
 
@@ -206,3 +221,33 @@ const getAccessToken = async () => {
     })
     return data
 }
+
+// 离线总计任务
+// const job = schedule.scheduleJob('0 * * * * *', async function() {
+const job = schedule.scheduleJob('0 0 0 * * *', async function() {
+  console.log('每一分钟来一次')
+  const allTalents = await User.findAll({
+    where: {
+        isTalent: true
+    }
+  })
+  allTalents.forEach(async (talent, idx) => {
+    const talentPlays = await Play.count({
+      where: {
+        talentId: talent.id
+      }
+    })
+    let playData = {
+      UserId: talent.id,
+      openId: talent.openId,
+      talentId: talent.id,
+      nickName: talent.nickName,
+      playTimes: talentPlays,
+      platform: talent.platform,
+    }
+
+    
+    const _create = await Analysis.create(playData)
+    // console.log('是否创建播放离线表成功', _create)
+  })
+})
