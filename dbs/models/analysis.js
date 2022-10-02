@@ -19,8 +19,7 @@ const Analysis = sequelize.define('Analysis', {
   },
   date: {
     type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: dayjs().subtract(1, 'day').format('YYYY-MM-DD'), 
+    allowNull: false, 
   },
   openId: {
     type: DataTypes.STRING,
@@ -29,7 +28,6 @@ const Analysis = sequelize.define('Analysis', {
   originDate: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: dayjs().unix(),
   },
   playTimes: {
     type: DataTypes.INTEGER,
@@ -40,6 +38,16 @@ const Analysis = sequelize.define('Analysis', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
+  },
+  cost: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0.0
+  },
+  ratio: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0.5,
   }
 })
 

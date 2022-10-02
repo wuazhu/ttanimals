@@ -26,6 +26,11 @@ const Product = sequelize.define('Product', {
   details: {
     type: DataTypes.STRING,
   },
+  // 是否置顶
+  isTop: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
 })
 
 module.exports = Product

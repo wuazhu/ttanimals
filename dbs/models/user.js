@@ -50,6 +50,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     defaultValue: 1, // 1: 抖音，2快手
   },
+  ratio: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0.5, // 1: 抖音，2快手
+  }
 })
 
 module.exports = User

@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const Product = require('../dbs/models/product')
-const TopProduct = require('../dbs/models/topProduct')
 
 // 根据用户id查询产品  C端
 router.get('/user/:id', async (req, res) => {
@@ -37,14 +36,18 @@ router.get('/user/:id', async (req, res) => {
 
 // 获取置顶产品  C端
 router.get('/top', async (req, res) => {
-    const _tops = await TopProduct.findAll({
+    const _tops = await Product.findAll({
         limit: 3,
+        where: {
+            isTop: true
+        },
         order: [
             [
-                'sortId', 'ASC'
+                'createdAt', 'ASC'
             ]
         ]
     })
+    
     res.send({
         code: 0,
         message: 'ok',

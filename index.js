@@ -4,6 +4,7 @@ const path = require('path')
 const axios = require('axios')
 const sequelize = require('./dbs/index')
 const schedule = require('node-schedule')
+const dayjs = require('dayjs')
 
 
 const {
@@ -21,16 +22,12 @@ const port = process.env.PORT || 80;
 
 const User = require('./dbs/models/user')
 const Product = require('./dbs/models/product')
-const TopProduct = require('./dbs/models/topProduct')
 const Play = require('./dbs/models/play')
 const Analysis = require('./dbs/models/analysis')
 
 
 User.hasMany(Product)
 Product.belongsTo(User)
-
-Product.hasOne(TopProduct)
-TopProduct.belongsTo(Product)
 
 User.hasMany(Play)
 Play.belongsTo(User)
@@ -228,13 +225,15 @@ const job = schedule.scheduleJob('0 0 0 * * *', async function() {
   console.log('每一分钟来一次')
   const allTalents = await User.findAll({
     where: {
-        isTalent: true
+      isTalent: true
     }
   })
   allTalents.forEach(async (talent, idx) => {
+    const _yestoday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
     const talentPlays = await Play.count({
       where: {
-        talentId: talent.id
+        talentId: talent.id,
+        date: _yestoday
       }
     })
     let playData = {
@@ -244,6 +243,9 @@ const job = schedule.scheduleJob('0 0 0 * * *', async function() {
       nickName: talent.nickName,
       playTimes: talentPlays,
       platform: talent.platform,
+      ratio: talent.ratio,
+      date: _yestoday,
+      originDate: dayjs().unix(),
     }
 
     
